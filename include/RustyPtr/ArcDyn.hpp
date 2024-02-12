@@ -2,6 +2,7 @@
 #define RUSTYPTR_ARCDYN
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 /**
@@ -12,31 +13,23 @@ class ArcDyn {
   std::shared_ptr<Interface> ptr;
 
  public:
-  template <typename Implementation,
-            std::enable_if_t<!std::is_same_v<ArcDyn<Interface>,
-                                             std::decay_t<Implementation>>,
-                             bool> = true>
+  template <
+      typename Implementation,
+      std::enable_if_t<!std::is_same_v<ArcDyn<Interface>,
+                                       std::remove_cvref_t<Implementation>>,
+                       bool> = true>
   ArcDyn(Implementation&& object)
-      : ptr(std::make_shared<Implementation>(std::move(object))) {
-    static_assert(!std::is_same_v<Interface, Implementation>,
-                  "Use Arc if Interface is the same as Implementation.");
-  }
-
-  template <typename Implementation,
-            std::enable_if_t<!std::is_same_v<ArcDyn<Interface>,
-                                             std::decay_t<Implementation>>,
-                             bool> = true>
-  ArcDyn(Implementation const& object)
-      : ptr(std::make_shared<Implementation>(object)) {
+      : ptr(std::make_shared<std::remove_cvref_t<Implementation>>(
+            std::forward<Implementation>(object))) {
     static_assert(!std::is_same_v<Interface, Implementation>,
                   "Use Arc if Interface is the same as Implementation.");
   }
 
   ArcDyn(ArcDyn const& other) = default;
-  ArcDyn& operator=(ArcDyn const& other) = default;
+  auto operator=(ArcDyn const& other) -> ArcDyn& = default;
 
   ArcDyn(ArcDyn&& other) = default;
-  ArcDyn& operator=(ArcDyn&& other) = default;
+  auto operator=(ArcDyn&& other) -> ArcDyn& = default;
 
   ~ArcDyn() = default;
 

@@ -19,7 +19,7 @@ class Box {
   Box(T const& object) : ptr{std::make_unique<T>(object)} {}
 
   Box(Box const& other) : Box{*other.ptr} {}
-  Box& operator=(Box const& other) {
+  auto operator=(Box const& other) -> Box& {
     *ptr = *other.ptr;
     return *this;
   }

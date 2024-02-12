@@ -19,9 +19,9 @@ class Arc {
   Arc(T const& object) : ptr(std::make_shared<T>(object)) {}
 
   Arc(Arc const& other) = default;
-  Arc& operator=(Arc const& other) = default;
+  auto operator=(Arc const& other) -> Arc& = default;
   Arc(Arc&& other) = default;
-  Arc& operator=(Arc&& other) = default;
+  auto operator=(Arc&& other) -> Arc& = default;
   ~Arc() = default;
 
   T& operator*() { return *ptr; }
