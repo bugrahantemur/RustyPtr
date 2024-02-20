@@ -21,7 +21,8 @@ class BoxDyn {
   BoxDyn(Implementation&& object)
       : ptr(std::make_unique<std::remove_cvref_t<Implementation>>(
             std::forward<Implementation>(object))) {
-    static_assert(!std::is_same_v<Interface, Implementation>,
+    static_assert(!std::is_same_v<std::remove_cvref_t<Interface>,
+                                  std::remove_cvref_t<Implementation>>,
                   "Use Box if Interface is the same as Implementation.");
   }
 
